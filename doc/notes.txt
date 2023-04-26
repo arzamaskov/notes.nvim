@@ -1,0 +1,18 @@
+==============================================================================
+                                                                   *notes.nvim*
+
+This plugin ...
+
+                                                                   *notes.setup*
+notes.setup({name}, {mode}, {mappings})
+
+Setup pluign >
+    require("notes").setup({
+        ...
+    })
+<
+
+                                                                 *after setup
+After |notes.setup|
+
+vim:tw=78:ts=8:ft=help:norl:
