@@ -19,6 +19,28 @@ local function get_file_path(vimwiki_config)
     return path .. file_name .. extension
 end
 
+local function check_vimwiki_config(t, keys)
+    for _, key in ipairs(keys) do
+        if t[key] == nil or t[key] == "" then
+            return false
+        end
+    end
+    return true
+end
+
+local function check_dependencies(conf)
+    if conf == nil then
+        error('Please, install the VimWiki plugin: https://github.com/vimwiki/vimwiki#installation')
+    end
+
+    local required_keys = { 'ext', 'index', 'path' }
+    if check_vimwiki_config(conf[1], required_keys) == false then
+        error('Something wrong with your VimWiki config')
+    end
+
+    return true
+end
+
 local function open_window()
     local file_path = get_file_path(vimwiki_list)
     local ui = vim.api.nvim_list_uis()[1]
