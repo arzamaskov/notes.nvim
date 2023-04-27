@@ -36,11 +36,30 @@ local function open_window()
         style = config.window_style,
         border = config.window_border
     }
+
+    local title = "VimWiki"
+    if config.window_title then
+        opts.title = title
+        if config.q_to_quit then
+            opts.title = opts.title .. " - press 'Esc' to quit"
+            opts.title_pos = "center"
+        end
+    end
+
     local win = vim.api.nvim_open_win(buf, true, opts)
 
-    -- Change highlighting
-    vim.api.nvim_win_set_option(win, 'winhl', 'Normal:ErrorFloat')
+    vim.cmd('edit ' .. file_path)
+    vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
+
+    if config.esc_to_quit and win then
+        vim.keymap.set('n', '<Esc>', function()
+            if vim.api.nvim_win_is_valid(win) then
+                vim.cmd('quit')
+            end
+        end)
+    end
 end
 
 open_window()
+
 return M
