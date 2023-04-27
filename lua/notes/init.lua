@@ -1,6 +1,8 @@
 local M = {}
 
-local config = {
+M.config = {}
+
+local default_config = {
     window_style = 'minimal',
     window_border = 'rounded',
     esc_to_quit = true,
@@ -33,17 +35,17 @@ local function open_window()
         row = math.floor(ui.height / 2 - height / 2),
         focusable = true,
         anchor = 'NW',
-        style = config.window_style,
-        border = config.window_border
+        style = M.config.window_style,
+        border = M.config.window_border
     }
 
     local title = "VimWiki"
-    if config.window_title then
+    if M.config.window_title then
         opts.title = title
-        if config.q_to_quit then
+        if M.config.esc_to_quit then
             opts.title = opts.title .. " - press 'Esc' to quit"
-            opts.title_pos = "center"
         end
+        opts.title_pos = "center"
     end
 
     local win = vim.api.nvim_open_win(buf, true, opts)
@@ -51,7 +53,7 @@ local function open_window()
     vim.cmd('edit ' .. file_path)
     vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
 
-    if config.esc_to_quit and win then
+    if M.config.esc_to_quit and win then
         vim.keymap.set('n', '<Esc>', function()
             if vim.api.nvim_win_is_valid(win) then
                 vim.cmd('quit')
@@ -60,6 +62,19 @@ local function open_window()
     end
 end
 
-open_window()
+M.setup = function(config)
+    M.config = vim.tbl_deep_extend('force', default_config, config or {})
+
+    vim.api.nvim_create_user_command('Notes', function(opts)
+        if check_dependencies(vimwiki_list) then
+            open_window()
+        end
+    end, {
+        nargs = '?',
+        complete = function(ArgLead, CmdLine, CursorPos)
+            return { 'global', 'manage' }
+        end
+    })
+end
 
 return M
