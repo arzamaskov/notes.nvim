@@ -1,0 +1,5 @@
+describe("notes", function ()
+    it("can be required", function ()
+        require("notes")
+    end)
+end)

@@ -1,0 +1,38 @@
+==============================================================================
+                                                                   *notes.nvim*
+This plugin adds a `Notes` command to quickly display VimWiki notes in a pop-up
+window. The window can be closed by pressing the Esc key. We recommend
+setting a keymapping to this command for faster access. The pop-up window
+displays the VimWiki index file and retains all functionality of the VimWiki
+plugin.
+
+Within the pop-up window, new notes can be created and existing ones can be
+edited. All changes made are automatically saved.
+
+                                                                   *notes.setup*
+Setup pluign: >
+    require("notes").setup({
+        window_style = 'minimal',
+        window_border = 'rounded',
+        esc_to_quit = true,
+        window_title = true,
+    })
+<
+The following configuration options are available for notes.nvim:
+
+`window_style`: This can be set to either "minimal" or an empty string.
+The default value is "minimal". More details can be found by
+running `:h nvim_open_win`.
+
+`window_border`: This can be set to "none", "single", "double", "rounded",
+"solid", or "shadow". The default value is "rounded". More details can be
+found by running `:h nvim_open_win`.
+
+`esc_to_quit`: This can be set to "true" or "false". If set to "true", pressing
+the Esc key will close the pop-up window. The default value is "true".
+
+`window_title`: This can be set to "true" or "false". If set to "true", the
+pop-up window will show the title. The default value is "true"
+
+
+vim:tw=78:ts=8:ft=help:norl:
