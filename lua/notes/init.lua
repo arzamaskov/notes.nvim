@@ -3,29 +3,28 @@ local M = {}
 local config = {
     window_style = 'minimal',
     window_border = 'rounded',
-    q_to_quit = true,
+    esc_to_quit = true,
     window_title = true,
 }
 
+local vimwiki_list = vim.api.nvim_get_var("vimwiki_list")
+
+local function get_file_path(vimwiki_config)
+    local extension = vimwiki_config[1].ext
+    local file_name = vimwiki_config[1].index
+    local path = vim.fn.expand(vimwiki_config[1].path)
+
+    return path .. file_name .. extension
+end
+
 local function open_window()
+    local file_path = get_file_path(vimwiki_list)
     local ui = vim.api.nvim_list_uis()[1]
     local width = math.floor((ui.width * 0.5) + 0.5)
     local height = math.floor((ui.height * 0.5) + 0.5)
 
-    -- Create the scratch buffer displayed in the floating window
     local buf = vim.api.nvim_create_buf(false, true)
 
-    local lines = { 'Hello' }
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-
-    -- Set mappings in the buffer to close the window easily
-    local closingKeys = { '<Esc>', '<CR>', '<Leader>' }
-    for _, closingKey in ipairs(closingKeys) do
-        vim.api.nvim_buf_set_keymap(buf, 'n', closingKey, ':close<CR>',
-            { silent = true, nowait = true, noremap = true })
-    end
-
-    -- Create the floating window
     local opts = {
         relative = 'editor',
         width = width,
