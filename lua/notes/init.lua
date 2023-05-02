@@ -89,18 +89,16 @@ local function open_window()
         opts.title_pos = "center"
     end
 
-    local win = vim.api.nvim_open_win(buf, true, opts)
+    local win_id = vim.api.nvim_open_win(buf, true, opts)
 
     vim.cmd('edit ' .. file_path)
     vim.api.nvim_buf_set_option(buf, 'bufhidden', 'wipe')
 
-    if M.config.esc_to_quit and win then
-        vim.keymap.set('n', '<Esc>', function()
-            if vim.api.nvim_win_is_valid(win) then
-                vim.cmd('quit')
-            end
-        end)
+    if M.config.esc_to_quit then
+        vim.api.nvim_buf_set_keymap(buf, 'n', '<Esc>', '<cmd>wq<CR>', { noremap = true, silent = false })
     end
+
+    return win_id
 end
 
 M.setup = function(config)
@@ -108,14 +106,20 @@ M.setup = function(config)
 
     vim.api.nvim_create_user_command('Notes', function(opts)
         if check_dependencies(vimwiki_list) then
-            open_window()
+            local win_id = open_window()
+            vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+                callback = function()
+                    local buf = vim.api.nvim_get_current_buf()
+                    local buf_data = vim.fn.getbufinfo(buf)
+                    for _, value in pairs(buf_data) do
+                        if win_id == value.windows[1] then
+                            vim.api.nvim_buf_set_keymap(buf, 'n', '<Esc>', '<cmd>wq<CR>', { noremap = true, silent = false })
+                        end
+                    end
+                end
+            })
         end
-    end, {
-        nargs = '?',
-        complete = function(ArgLead, CmdLine, CursorPos)
-            return { 'global', 'manage' }
-        end
-    })
+    end, {})
 end
 
 return M
