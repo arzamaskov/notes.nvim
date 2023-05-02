@@ -7,6 +7,8 @@ local default_config = {
     window_border = 'rounded',
     esc_to_quit = true,
     window_title = true,
+    window_width = 75,
+    window_height = 75,
 }
 
 local vimwiki_list = vim.api.nvim_get_var("vimwiki_list")
@@ -41,11 +43,28 @@ local function check_dependencies(conf)
     return true
 end
 
+local function is_window_sizes_valid(sizes)
+    if sizes.window_width <= 0 or sizes.window_width >= 100 then
+        return false
+    end
+
+    if sizes.window_height <= 0 or sizes.window_height >= 100 then
+        return false
+    end
+
+    return true
+end
+
 local function open_window()
     local file_path = get_file_path(vimwiki_list)
     local ui = vim.api.nvim_list_uis()[1]
     local width = math.floor((ui.width * 0.5) + 0.5)
     local height = math.floor((ui.height * 0.5) + 0.5)
+
+    if is_window_sizes_valid(M.config) then
+        width = math.floor((ui.width * M.config.window_width / 100) + 0.5)
+        height = math.floor((ui.height * M.config.window_height / 100) + 0.5)
+    end
 
     local buf = vim.api.nvim_create_buf(false, true)
 
